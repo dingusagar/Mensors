@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     double prev_acc_x , prev_acc_y,prev_acc_z;
     double threshold = 0.02;
+
+    boolean canAlert = true;
 
 
     @Override
@@ -83,8 +86,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if(Math.abs(prev_acc_z - acc_z) > threshold)
             movement = true;
 
-        if(movement)
+        if(movement && canAlert) {
+            canAlert = false;
             Toast.makeText(getApplicationContext(), "Phone Moved !!", Toast.LENGTH_SHORT).show();
+            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.alert);
+            mediaPlayer.start();
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }finally {
+                        canAlert = true;
+                    }
+                }
+            });
+            thread.start();
+        }
 
 
 
