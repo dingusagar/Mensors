@@ -1,6 +1,7 @@
 package com.example.dingu.mensors;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -8,9 +9,12 @@ import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener,SeekBar.OnSeekBarChangeListener{
 
@@ -21,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     Toast mToast;
 
     SeekBar seekBar;
+    ToggleButton toggleButton;
 
     double prev_acc_x , prev_acc_y,prev_acc_z;
     double threshold = 0.02;
@@ -35,6 +40,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         thresholdText = findViewById(R.id.threshold_text);
         seekBar = findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(this);
+        toggleButton = findViewById(R.id.toggle_start_stop_service);
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    startService(new Intent(getBaseContext(),SensorService.class));
+                }else{
+                    stopService(new Intent(getBaseContext(),SensorService.class));
+                }
+            }
+        });
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
